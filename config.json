@@ -1,0 +1,21 @@
+{
+  "source": ["tokens.json"],
+  "platforms": {
+    "scss": {
+      "transformGroup": "scss",
+      "buildPath": "build/",
+      "files": [{
+        "destination": "scss/_variables.scss",
+        "format": "scss/variables"
+      }]
+    },
+    "android": {
+      "transformGroup": "android",
+      "buildPath": "build/android/",
+      "files": [{
+        "destination": "font_dimens.xml",
+        "format": "android/fontDimens"
+      }]
+    }
+  }
+}
