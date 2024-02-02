@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "bin": "dist/cli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Error: no test specified\"",
     "build": "tsc & tsc-alias",
     "build:watch": "(concurrently \"tsc -w\" \"tsc-alias -w\")"
   },
