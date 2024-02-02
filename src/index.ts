@@ -192,7 +192,7 @@ interface Parser {
     parse(
         expressions: Expression[],
         executor: ExpressionsEvaluator,
-        figmaTokens: FigmaTokens
+        figmaTokens: TokensObject
     ): string;
 }
 
@@ -207,13 +207,13 @@ class DefaultParser implements Parser {
     }
 }
 
-class FigmaTokens {
+class TokensObject {
     expressions: Expression[];
     protected expressionsEvaluator: ExpressionsEvaluator;
     protected parsers = new Map<string, Parser>();
 
     constructor(public obj: RecursiveFigmaObj) {
-        this.expressions = FigmaTokens.createExpressionsFromFigmaObject(obj);
+        this.expressions = TokensObject.createExpressionsFromFigmaObject(obj);
         this.expressionsEvaluator = new ExpressionsEvaluator(this.expressions, obj);
         this.registerParser(new DefaultParser());
     }
@@ -271,7 +271,7 @@ class FigmaTokens {
                     return [new Expression(val.value as string, `${currentPath}.value`, val.type)];
                 }
 
-                return FigmaTokens.createExpressionsFromFigmaObject(val, currentPath);
+                return TokensObject.createExpressionsFromFigmaObject(val, currentPath);
             });
     }
 }
@@ -281,7 +281,7 @@ const kebabize = (str: string) => str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($: stri
 async function main() {
     const b = await readFile(resolve('./tokens.json'));
     const tokensObject = JSON.parse(b.toString());
-    const ft = new FigmaTokens(tokensObject);
+    const ft = new TokensObject(tokensObject);
 
     console.log('======>', ft.getValueForKey('fontSize.xl'));
 }
