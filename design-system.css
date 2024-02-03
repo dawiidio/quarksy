@@ -1,0 +1,39 @@
+:root {
+    --sizing-base: 2px;
+    --sizing-xs: 4px;
+    --sizing-s: 8px;
+    --sizing-m: 24px;
+    --sizing-l: 24px;
+    --sizing-xl: 32px;
+    --colors-primary-100: #c7fadb;
+    --colors-primary-500: #05eb62;
+    --colors-primary-900: #066d2f;
+    --colors-secondary-100: #e9d5f8;
+    --colors-secondary-500: #941bf0;
+    --colors-secondary-900: #3e046a;
+    --font-size-s: 14px;
+    --font-size-m: 16px;
+    --font-size-l: 24px;
+    --font-size-xl: 36px;
+    --border-radius-m: 6px;
+    --font-family-primary: Ubuntu;
+    --font-family-secondary: Nunito;
+    --font-weight-bold: 800;
+    --font-weight-thin: 300;
+    --font-weight-normal: 500;
+    --spacing-s: 4px;
+    --spacing-m: 8px;
+    --spacing-l: 24px;
+}
+
+.typography-H3 { 
+   font-family: Nunito;
+   font-weight: 500;
+   font-size: 36px; 
+}
+
+.typography-Body1 { 
+   font-family: Ubuntu;
+   font-weight: 300;
+   font-size: 16px; 
+}

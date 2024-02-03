@@ -1,20 +1,18 @@
 import { TokenValueObject } from '~/types';
 
-const camelCaseToKebabCase = (str: string) => str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($: string, ofs: string) => (ofs ? "-" : "") + $.toLowerCase());
+export const camelCaseToKebabCase = (str: string) => str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($: string, ofs: string) => (ofs ? "-" : "") + $.toLowerCase());
 
 export const TOKEN_REF_REGEX = /(?<reference>\{[\w\.?\d?]+\})/mi;
 
-export const REGEX = /(?<operator>^|[\-\+\*\/])(?<expression>\{?[#\w\.\d]+\}?)/gm;
-export const NUMBER_VALUE_REGEX = /^\d+$|^\d+px$/mi;
+export const EXP_OP_PAIR_REGEX = /(?<operator>^|[\-\+\*\/])(?<expression>\{?[#\w\.\d]+\}?)/gm;
+export const NUMBER_VALUE_REGEX = /^(?<numbers>[\d\.]+)(?<ext>[a-zA-Z%]+)?/mi;
 
 export const isTokenStringReference = (val: string) => TOKEN_REF_REGEX.test(val);
 export const isNumberValue = (val: string) => NUMBER_VALUE_REGEX.test(val);
 
 export const evaluateTokenInContext = (token: string, ctx: RecursiveObject): string | number | undefined => {
     const path = token.replaceAll(/[{}]/g, '');
-    const val = getPropValueByStringPath(ctx, `${path}.value`);
-
-    return isNumberValue(val) ? parseInt(val.replace('px', '')) : val;
+    return getPropValueByStringPath(ctx, `${path}.value`);
 }
 
 export interface RecursiveObject {

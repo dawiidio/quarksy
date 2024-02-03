@@ -1,11 +1,12 @@
-import {isNumberValue, isTokenStringReference, REGEX} from "~/common";
+import { isNumberValue, isTokenStringReference, EXP_OP_PAIR_REGEX, NUMBER_VALUE_REGEX } from '~/common';
 
 export type ValueExpressionSingleTokenType = 'operator' | 'value' | 'token';
 
 export interface ValueExpressionSingleToken {
     type: ValueExpressionSingleTokenType
-    expression: string
+    stringExpression: string
     value?: string | number
+    ext?: string
 }
 
 export class ValueExpression {
@@ -26,12 +27,12 @@ export class ValueExpression {
         this.parse();
     }
 
-    get figmaTokens() {
+    get tokenExpressions() {
         return this.tokens.filter(({type}) => type === 'token');
     }
 
-    parse() {
-        const matches = [...this.expression.matchAll(REGEX)];
+    protected parse() {
+        const matches = [...this.expression.matchAll(EXP_OP_PAIR_REGEX)];
 
         matches.forEach((val, i) => {
             const {
@@ -41,32 +42,33 @@ export class ValueExpression {
 
             if (operator) {
                 this.tokens.push({
-                    expression: operator,
+                    stringExpression: operator,
                     type: "operator",
                 });
             }
 
             if (isTokenStringReference(expression)) {
                 this.tokens.push({
-                    expression,
+                    stringExpression: expression,
                     type: 'token'
                 });
                 return;
             }
 
             if (isNumberValue(expression)) {
-                const withoutPx = expression.replaceAll('px', '');
+                const match = expression.match(NUMBER_VALUE_REGEX) as RegExpMatchArray;
 
                 this.tokens.push({
-                    expression: expression,
+                    stringExpression: expression,
                     type: 'value',
-                    value: parseInt(withoutPx)
+                    value: parseInt(match.groups!.numbers),
+                    ext: match.groups!.ext
                 });
                 return;
             }
 
             this.tokens.push({
-                expression,
+                stringExpression: expression,
                 type: 'value'
             });
             this.canBeEvaluatedToNumber = false;

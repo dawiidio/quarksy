@@ -1,17 +1,23 @@
 import {
-    readFile
+    readFile,
+    writeFile
 } from 'node:fs/promises';
 import {
-    resolve
+    resolve,
 } from 'node:path';
-import {TokensObject} from "~/TokensObject";
+import { TokensObjectParser } from '~/TokensObjectParser';
+import { CssPlatform } from '~/platforms/CssPlatform';
 
 async function main() {
     const b = await readFile(resolve('./tokens.json'));
     const tokensObject = JSON.parse(b.toString());
-    const ft = new TokensObject(tokensObject);
+    const ft = new TokensObjectParser(tokensObject);
 
-    console.log('======>', ft.getValueForKey('fontSize.xl'));
+    const css = new CssPlatform();
+
+    await Promise.all(css.run(ft).map(async ([fileName, content]) => {
+        await writeFile(fileName, content);
+    }));
 }
 
 main();

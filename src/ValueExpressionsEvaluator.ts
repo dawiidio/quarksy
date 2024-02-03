@@ -1,4 +1,4 @@
-import {ValueExpression} from "~/ValueExpression";
+import { ValueExpression, ValueExpressionSingleToken } from '~/ValueExpression';
 import {evaluateTokenInContext, RecursiveObject} from "~/common";
 
 export class ValueExpressionsEvaluator {
@@ -12,9 +12,10 @@ export class ValueExpressionsEvaluator {
         this.tokensLookupTable = this.expressions.reduce((acc, exp) => {
             return {
                 ...acc,
-                ...exp.figmaTokens.reduce((acc2, {expression: token}) => {
-                    if (acc[token])
-                        return acc[token];
+                ...exp.tokenExpressions.reduce((acc2, {stringExpression: token}) => {
+                    if (acc[token]) {
+                        return acc2;
+                    }
 
                     const val = evaluateTokenInContext(token, this.ctx);
 
@@ -30,40 +31,67 @@ export class ValueExpressionsEvaluator {
         }, {} as Record<string, string | number>);
     }
 
-    evaluate(expression: ValueExpression) {
-        let tokensCanBeEvaluated = true;
+    evaluate(expression: ValueExpression): { ext?: string, val: number | string } {
+        let tokensCanBeEvaluatedToNumber = true;
+        // let allUsedTokens: ValueExpressionSingleToken[] = expression.tokens;
+        const usedExtensions = new Set<string>;
 
         const exp = expression.tokens
-            .map(({type, expression, value}) => {
+            .map(({type, stringExpression, value, ext}) => {
                 let val;
+
+                if (ext)
+                    usedExtensions.add(ext);
 
                 switch (type) {
                     case "operator":
-                        val = expression;
+                        val = stringExpression;
                         break;
                     case "token":
-                        val = this.tokensLookupTable[expression];
+                        val = this.tokensLookupTable[stringExpression];
                         break;
                     case "value":
-                        val = value !== undefined ? value : expression;
+                        val = value !== undefined ? value : stringExpression;
                         break;
                     default:
                         throw new Error(`Unknown token type ${type}`);
                 }
 
+                if (type === 'token') {
+                    const ve = new ValueExpression(String(val));
+                    tokensCanBeEvaluatedToNumber = ve.canBeEvaluatedToNumber;
+                    ve.tokens.map(t => t.ext).forEach(e => e && usedExtensions.add(e))
+
+                    const {
+                        val: evaluatedVal, ext: evaluatedExt
+                    } = this.evaluate(ve);
+
+                    if (evaluatedExt)
+                        usedExtensions.add(evaluatedExt);
+
+                    return evaluatedVal;
+                }
+
                 if (type !== 'operator' && typeof val === 'string') {
-                    tokensCanBeEvaluated = false;
+                    tokensCanBeEvaluatedToNumber = false;
                 }
 
                 return val;
             })
             .join('');
 
-        if (expression.canBeEvaluatedToNumber && tokensCanBeEvaluated) {
+        if (expression.canBeEvaluatedToNumber && tokensCanBeEvaluatedToNumber) {
             const executor = new Function(`return ${exp};`);
-            return executor();
+            const val = executor();
+
+            return {
+                val,
+                ext: [...usedExtensions.values()].at(0) as string
+            }
         }
 
-        return exp;
+        return {
+            val: exp
+        };
     }
 }
