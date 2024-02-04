@@ -7,6 +7,10 @@
   "bin": {
     "quarksy": "dist/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dawiidio/quarksy.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "tsc & tsc-alias",
@@ -27,8 +31,13 @@
     "tsc-alias": "^1.8.8",
     "typescript": "^5.3.3"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["design", "design-tokens", "figma"],
+  "author": {
+    "email": "dawid@dawiid.io",
+    "name": "Dawid Wojda",
+    "url": "https://dawiid.io/"
+  },
+  "private": false,
   "license": "ISC",
   "dependencies": {
     "commander": "^11.1.0"
