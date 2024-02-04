@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "Compact design tokens parser",
   "main": "dist/index.js",
-  "bin": "dist/cli.js",
+  "type": "commonjs",
+  "bin": {
+    "quarksy": "dist/cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\"",
     "build": "tsc & tsc-alias",

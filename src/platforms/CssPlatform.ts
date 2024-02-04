@@ -68,7 +68,6 @@ export class CssPlatform extends Platform<CssPlatformOptions> {
             return acc + `\n.${prefix}${key.replaceAll('.', '-')} { \n${val.map(v => '   ' + v.join(': ') + ';').join('\n')} \n}\n`
         }, '');
 
-
         return [[this.options.outFileName as string, generalAcc]];
     }
 }

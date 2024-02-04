@@ -1,7 +1,7 @@
 import { TokensObjectParser } from '~/TokensObjectParser';
 
-type PathToOutFile = string;
-type FileContent = string;
+export type PathToOutFile = string;
+export type FileContent = string;
 
 export abstract class Platform<T extends Record<string, any> = Record<string, any>> {
     public options: T;

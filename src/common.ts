@@ -1,4 +1,6 @@
 import { TokenValueObject } from '~/types';
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 export const camelCaseToKebabCase = (str: string) => str.replace(/[A-Z]+(?![a-z])|[A-Z]/g, ($: string, ofs: string) => (ofs ? "-" : "") + $.toLowerCase());
 
@@ -30,3 +32,13 @@ export const getPropValueByStringPath = <T = any>(target: RecursiveObject, path:
 }
 
 export const isTokenValueObject = (val: any): val is TokenValueObject => Boolean(val?.type);
+
+export const writePlatformOutputToFileSystem = (output: [string, string][], outputDir: string = ''): Promise<string[]> => {
+    return Promise.all(
+        output
+            .map(async ([fileName, content]) => {
+                await writeFile(join(outputDir, fileName), content);
+                return join(outputDir, fileName);
+            }),
+    );
+};

@@ -1,5 +1,5 @@
-import { ValueExpression, ValueExpressionSingleToken } from '~/ValueExpression';
-import {evaluateTokenInContext, RecursiveObject} from "~/common";
+import { ValueExpression } from '~/ValueExpression';
+import { evaluateTokenInContext, RecursiveObject } from '~/common';
 
 export class ValueExpressionsEvaluator {
     protected tokensLookupTable: Record<string, string | number> = {};
@@ -12,7 +12,7 @@ export class ValueExpressionsEvaluator {
         this.tokensLookupTable = this.expressions.reduce((acc, exp) => {
             return {
                 ...acc,
-                ...exp.tokenExpressions.reduce((acc2, {stringExpression: token}) => {
+                ...exp.tokenExpressions.reduce((acc2, { stringExpression: token }) => {
                     if (acc[token]) {
                         return acc2;
                     }
@@ -26,31 +26,30 @@ export class ValueExpressionsEvaluator {
                         ...acc2,
                         [token]: val,
                     };
-                }, {})
-            }
+                }, {}),
+            };
         }, {} as Record<string, string | number>);
     }
 
     evaluate(expression: ValueExpression): { ext?: string, val: number | string } {
         let tokensCanBeEvaluatedToNumber = true;
-        // let allUsedTokens: ValueExpressionSingleToken[] = expression.tokens;
         const usedExtensions = new Set<string>;
 
         const exp = expression.tokens
-            .map(({type, stringExpression, value, ext}) => {
+            .map(({ type, stringExpression, value, ext }) => {
                 let val;
 
                 if (ext)
                     usedExtensions.add(ext);
 
                 switch (type) {
-                    case "operator":
+                    case 'operator':
                         val = stringExpression;
                         break;
-                    case "token":
+                    case 'token':
                         val = this.tokensLookupTable[stringExpression];
                         break;
-                    case "value":
+                    case 'value':
                         val = value !== undefined ? value : stringExpression;
                         break;
                     default:
@@ -60,10 +59,10 @@ export class ValueExpressionsEvaluator {
                 if (type === 'token') {
                     const ve = new ValueExpression(String(val));
                     tokensCanBeEvaluatedToNumber = ve.canBeEvaluatedToNumber;
-                    ve.tokens.map(t => t.ext).forEach(e => e && usedExtensions.add(e))
+                    ve.tokens.map(t => t.ext).forEach(e => e && usedExtensions.add(e));
 
                     const {
-                        val: evaluatedVal, ext: evaluatedExt
+                        val: evaluatedVal, ext: evaluatedExt,
                     } = this.evaluate(ve);
 
                     if (evaluatedExt)
@@ -86,12 +85,12 @@ export class ValueExpressionsEvaluator {
 
             return {
                 val,
-                ext: [...usedExtensions.values()].at(0) as string
-            }
+                ext: [...usedExtensions.values()].at(0) as string,
+            };
         }
 
         return {
-            val: exp
+            val: exp,
         };
     }
 }
