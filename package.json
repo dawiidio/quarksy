@@ -13,7 +13,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\"",
-    "build": "tsc & tsc-alias",
+    "build": "tsc && tsc-alias",
     "build:watch": "(concurrently \"tsc -w\" \"tsc-alias -w\")"
   },
   "files": [
