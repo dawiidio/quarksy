@@ -4,6 +4,7 @@ import { camelCaseToKebabCase } from '~/common';
 
 export interface CssPlatformOptions {
     cssVariablePrefix?: string
+    cssClassPrefix?: string
     outFileName?: string
 }
 
@@ -11,6 +12,7 @@ export class CssPlatform extends Platform<CssPlatformOptions> {
     getDefaultOptions(): CssPlatformOptions {
         return {
             cssVariablePrefix: '',
+            cssClassPrefix: '',
             outFileName: 'design-system.css'
         }
     }
@@ -61,7 +63,9 @@ export class CssPlatform extends Platform<CssPlatformOptions> {
 
         generalAcc += '\n';
         generalAcc += Object.entries(typographyClasses).reduce((acc, [key, val]) => {
-            return acc + `\n.${key.replaceAll('.', '-')} { \n${val.map(v => '   ' + v.join(': ') + ';').join('\n')} \n}\n`
+            const prefix = this.options?.cssClassPrefix ? `${this.options.cssClassPrefix}-` : '';
+
+            return acc + `\n.${prefix}${key.replaceAll('.', '-')} { \n${val.map(v => '   ' + v.join(': ') + ';').join('\n')} \n}\n`
         }, '');
 
 

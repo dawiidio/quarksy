@@ -1,6 +1,6 @@
 import {
     readFile,
-    writeFile
+    writeFile,
 } from 'node:fs/promises';
 import {
     resolve,
@@ -11,13 +11,17 @@ import { CssPlatform } from '~/platforms/CssPlatform';
 async function main() {
     const b = await readFile(resolve('./tokens.json'));
     const tokensObject = JSON.parse(b.toString());
-    const ft = new TokensObjectParser(tokensObject);
+    const tokensObjectParser = new TokensObjectParser(tokensObject);
 
-    const css = new CssPlatform();
+    const cssPlatform = new CssPlatform({
+        outFileName: 'test.css',
+    });
 
-    await Promise.all(css.run(ft).map(async ([fileName, content]) => {
-        await writeFile(fileName, content);
-    }));
+    await Promise.all(
+        cssPlatform
+            .run(tokensObjectParser)
+            .map(async ([fileName, content]) => await writeFile(fileName, content)),
+    );
 }
 
 main();
